@@ -247,9 +247,58 @@ def Page_paperofYears(request):
 
 #二级单位论文贡献
 def Page_journalsContribution(request):
+    institutionDict = {
+        '材料与冶金学院': ['Coll Mat & Met', 'Sch Met & Mat'],
+        '理学院': ['Coll Sci'],
+        '化学工程与技术学院': ['Sch Chem & Chem Engn', 'Sch Chem Engn & Technol', 'Coll Chem Engn & Techno'],
+        '医学院': ['Coll Med', 'Sch Med'],
+        '资源与环境工程学院': ['Coll Resource & Environm Engn', 'Sch Resource & Environm Engn'],
+        '计算机科学与技术学院': ['Coll Comp Sci & Technol', 'Sch Comp Sci'],
+        '信息科学与工程学院': ['Sch Informat Sci & Engn'],
+        '机械自动化学院': ['Sch Mech Engn', 'Coll Mech & Automat', 'Sch Machinery & Automat'],
+        '附属天佑医院': ['Affiliated Tianyou Hosp', 'Tianyou Hosp'],
+        '国际钢铁研究院': ['Int Res Inst Steel Technol'],
+        '管理学院': ['Sch Management'],
+        '生物医学研究院': ['Inst Biol & Med'],
+        '附属普仁医院': ['Puren Hosp'],
+        '城市建设学院': ['Coll Urban Construct'],
+        '武汉科技大学城市学院': ['City Coll'],
+        '文法与经济学院': ['Res Ctr SME'],
+        '汉阳医院': ['Hanyang Hosp'],
+        '汽车与交通工程学院': ['Sch Automobile & Traff Engn']}
+    institutionJournalDict = {
+        '材料与冶金学院': 0,
+        '理学院': 0,
+        '化学工程与技术学院': 0,
+        '医学院': 0,
+        '资源与环境工程学院': 0,
+        '计算机科学与技术学院': 0,
+        '信息科学与工程学院': 0,
+        '机械自动化学院': 0,
+        '附属天佑医院': 0,
+        '国际钢铁研究院': 0,
+        '管理学院': 0,
+        '生物医学研究院': 0,
+        '附属普仁医院': 0,
+        '城市建设学院': 0,
+        '武汉科技大学城市学院': 0,
+        '文法与经济学院': 0,
+        '汉阳医院': 0,
+        '汽车与交通工程学院': 0
+    }
     if request.session.get('username', None):
 
-        return render(request, "Page_journalsContribution.html")
+        for key in institutionDict:
+            for institute in institutionDict[key]:
+                paper_data = models.Dissertation.objects.filter(MECHANISM__icontains=institute)
+                institution_count = 0
+                for paper in paper_data:
+                    institution_count += 1
+                institutionJournalDict[key] += institution_count
+
+        return render(request, "Page_journalsContribution.html", {
+            'instituteContributeDict':json.dumps(institutionJournalDict)
+        })
 
     else:
         return render(request, "login.html", {"message": "走正门"})
